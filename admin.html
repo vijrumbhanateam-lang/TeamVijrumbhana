@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Vijrumbhana | Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="admin.js" defer></script>
+</head>
+<body>
+
+  <header class="hero">
+    <h1>TEAM VIJRUMBHANA</h1>
+    <p class="tagline">Administrator Portal</p>
+  </header>
+
+  <main class="container">
+
+    <section class="form-card" id="loginSection">
+      <h2>Admin Login</h2>
+      <p class="muted">Authorized access only.</p>
+
+      <form id="loginForm">
+        <label for="password">Admin Password</label>
+        <input type="password" id="password"
+          required autocomplete="current-password">
+
+        <button type="submit">Login</button>
+        <p id="loginMessage" role="status"></p>
+      </form>
+    </section>
+
+    <section id="dashboardSection" hidden>
+      <div class="form-card">
+        <h2>Complaint Dashboard</h2>
+        <p class="muted">Review and manage student complaints.</p>
+
+        <button type="button" id="refreshButton">Refresh Complaints</button>
+        <button type="button" id="logoutButton">Logout</button>
+
+        <p id="dashboardMessage" role="status"></p>
+        <div id="complaintsList"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 Team Vijrumbhana</p>
+  </footer>
+
+</body>
+</html>
