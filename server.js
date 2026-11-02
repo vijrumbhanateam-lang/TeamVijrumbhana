@@ -39,7 +39,7 @@ app.use(helmet({
 }));
 
 app.use(express.json({ limit: "20kb" }));
-
+app.set("trust proxy", 1);
 app.use(session({
   name: "vijrumbhana.sid",
   secret: process.env.SESSION_SECRET,
