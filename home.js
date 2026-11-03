@@ -12,15 +12,17 @@ form.addEventListener("submit", async (event) => {
   button.textContent = "Submitting...";
 
   const formData = new FormData(form);
-
-  const complaint = {
+const complaint = {
     studentName: formData.get("studentName").trim(),
+    institutionType: formData.get("institutionType").trim(),
+    institutionName: formData.get("institutionName").trim(),
     class: formData.get("className").trim(),
     section: formData.get("section").trim(),
     rollNumber: formData.get("rollNumber").trim(),
     phoneNumber: formData.get("phone").trim(),
     complaintDetails: formData.get("details").trim()
   };
+  
 
   try {
     await fetch(GOOGLE_SCRIPT_URL, {
