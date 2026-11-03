@@ -36,7 +36,17 @@
       <form id="complaintForm">
         <label for="studentName">Student Name</label>
         <input id="studentName" name="studentName" required maxlength="100">
+<label for="institutionType">Institution Type</label>
+<select id="institutionType" name="institutionType" required>
+  <option value="">Select School or College</option>
+  <option value="School">School</option>
+  <option value="College">College</option>
+</select>
 
+<label for="institutionName">School / College Name</label>
+<input id="institutionName" name="institutionName"
+  required maxlength="150"
+  placeholder="Enter your institution name">
         <div class="two-columns">
           <div>
             <label for="className">Class</label>
