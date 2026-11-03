@@ -11,15 +11,17 @@ form.addEventListener("submit", async (event) => {
   button.textContent = "Submitting...";
 
   const formData = new FormData(form);
-
-  const complaint = {
+const complaint = {
     studentName: formData.get("studentName").trim(),
+    institutionType: formData.get("institutionType").trim(),
+    institutionName: formData.get("institutionName").trim(),
     className: formData.get("className").trim(),
     section: formData.get("section").trim(),
     rollNumber: formData.get("rollNumber").trim(),
     phone: formData.get("phone").trim(),
     details: formData.get("details").trim()
   };
+  
 
   try {
     const response = await fetch("/api/complaints", {
