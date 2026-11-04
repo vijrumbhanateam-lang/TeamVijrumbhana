@@ -1,100 +1,94 @@
 
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Vijrumbhana Membership</title>
 
-    // MEMBERSHIP REGISTRATION
-    if (data.reason !== undefined && data.skills !== undefined) {
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-      let sheet = spreadsheet.getSheetByName("Membership");
+  <h1>TEAM VIJRUMBHANA</h1>
+  <h2>Membership Registration</h2>
 
-      if (!sheet) {
-        sheet = spreadsheet.insertSheet("Membership");
-      }
+  <form id="membershipForm">
 
-      // Add headings if the sheet is empty
-      if (sheet.getLastRow() === 0) {
-        sheet.appendRow([
-          "Enrollment No",
-          "Date",
-          "Student Name",
-          "Class",
-          "Section",
-          "Roll Number",
-          "Mobile",
-          "Email",
-          "Reason",
-          "Skills",
-          "Status"
-        ]);
-      }
+    <label>Student Name</label>
+    <input type="text" name="studentName" required>
 
-      const enrollmentNo = "TVM-" +
-        Utilities.getUuid().substring(0, 8).toUpperCase();
+    <label>Class</label>
+    <input type="text" name="className" required>
 
-      sheet.appendRow([
-        enrollmentNo,
-        new Date(),
-        data.studentName || "",
-        data.className || "",
-        data.section || "",
-        data.rollNumber || "",
-        data.mobile || "",
-        data.email || "",
-        data.reason || "",
-        data.skills || "",
-        "Pending"
-      ]);
+    <label>Section</label>
+    <input type="text" name="section" required>
 
-      return ContentService
-        .createTextOutput(JSON.stringify({
-          success: true,
-          message: "Membership application saved successfully"
-        }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
+    <label>Roll Number</label>
+    <input type="text" name="rollNumber" required>
 
-    // COMPLAINT REGISTRATION
-    let sheet = spreadsheet.getActiveSheet();
+    <label>Mobile Number</label>
+    <input type="tel" name="mobile" required>
 
-    if (sheet.getName() === "Membership") {
-      sheet = spreadsheet.getSheetByName("Complaints") ||
-              spreadsheet.getSheetByName("Complaint") ||
-              spreadsheet.getSheets()[0];
-    }
+    <label>Email</label>
+    <input type="email" name="email" required>
 
-    sheet.appendRow([
-      new Date(),
-      data.studentName || "",
-      data.class || "",
-      data.rollNumber || "",
-      data.section || "",
-      data.phoneNumber || "",
-      data.complaintDetails || "",
-      data.institutionType || "",
-      data.institutionName || ""
-    ]);
+    <label>Why do you want to join?</label>
+    <textarea name="reason" required></textarea>
 
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        success: true,
-        message: "Complaint saved successfully"
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
+    <label>Your Skills</label>
+    <textarea name="skills" required></textarea>
 
-  } catch (error) {
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        success: false,
-        message: error.toString()
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
+    <button type="submit">Submit Application</button>
 
-function doGet(e) {
-  return ContentService.createTextOutput(
-    "Team Vijrumbhana connection is working!"
-  );
-}
+  </form>
+
+  <p id="message"></p>
+
+  <script>
+    const GOOGLE_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbxueOTcQAwyVHdjVX5LRdi1cdH4HleUTtWHDk0XuHFL_FBo1qUTmUXiKXXQV2jnn3jB/exec";
+
+    document.getElementById("membershipForm")
+      .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const form = event.target;
+        const message = document.getElementById("message");
+
+        const data = {
+          studentName: form.studentName.value.trim(),
+          className: form.className.value.trim(),
+          section: form.section.value.trim(),
+          rollNumber: form.rollNumber.value.trim(),
+          mobile: form.mobile.value.trim(),
+          email: form.email.value.trim(),
+          reason: form.reason.value.trim(),
+          skills: form.skills.value.trim()
+        };
+
+        try {
+          await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "text/plain;charset=UTF-8"
+            },
+            body: JSON.stringify(data)
+          });
+
+          message.textContent =
+            "Application submitted! The team will review it.";
+
+          form.reset();
+
+        } catch (error) {
+          message.textContent =
+            "Unable to submit. Please try again.";
+        }
+      });
+  </script>
+
+</body>
+</html>
