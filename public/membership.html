@@ -137,15 +137,46 @@
     <a href="index.html" class="back">
         ← Back to Home Page
     </a>
+<script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxueOTcQAwyVHdjVX5LRdi1cdH4HleUTtWHDk0XuHFL_FBo1qUTmUXiKXXQV2jnn3jB/exec";
 
-    <script>
-        document.getElementById("membershipForm")
-        .addEventListener("submit", function(event) {
-            event.preventDefault();
+    document.getElementById("membershipForm")
+    .addEventListener("submit", async function(event) {
+        event.preventDefault();
 
-            alert("The registration form is ready. We still need to connect Google Sheets to save applications and generate enrollment numbers.");
-        });
-    </script>
+        const form = event.target;
+
+        const data = {
+            studentName: form.studentName.value.trim(),
+            className: form.className.value.trim(),
+            section: form.section.value.trim(),
+            rollNumber: form.rollNumber.value.trim(),
+            mobile: form.mobile.value.trim(),
+            email: form.email.value.trim(),
+            reason: form.reason.value.trim(),
+            skills: form.skills.value.trim()
+        };
+
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "text/plain;charset=UTF-8"
+                },
+                body: JSON.stringify(data)
+            });
+
+            alert("Your membership application has been submitted. The team will review it.");
+
+            form.reset();
+
+        } catch (error) {
+            alert("Unable to submit your application. Please try again.");
+        }
+    });
+</script>
+    
 
 </body>
 </html>
