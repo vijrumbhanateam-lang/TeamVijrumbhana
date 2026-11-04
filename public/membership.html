@@ -1,182 +1,100 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Membership Registration | Team Vijrumbhana</title>
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    // MEMBERSHIP REGISTRATION
+    if (data.reason !== undefined && data.skills !== undefined) {
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0b1730;
-            color: white;
-        }
+      let sheet = spreadsheet.getSheetByName("Membership");
 
-        header {
-            text-align: center;
-            padding: 30px 15px;
-        }
+      if (!sheet) {
+        sheet = spreadsheet.insertSheet("Membership");
+      }
 
-        h1 {
-            color: #f5c451;
-        }
+      // Add headings if the sheet is empty
+      if (sheet.getLastRow() === 0) {
+        sheet.appendRow([
+          "Enrollment No",
+          "Date",
+          "Student Name",
+          "Class",
+          "Section",
+          "Roll Number",
+          "Mobile",
+          "Email",
+          "Reason",
+          "Skills",
+          "Status"
+        ]);
+      }
 
-        .form-container {
-            max-width: 600px;
-            margin: 20px auto;
-            background: white;
-            color: #14213d;
-            padding: 30px;
-            border-radius: 15px;
-        }
+      const enrollmentNo = "TVM-" +
+        Utilities.getUuid().substring(0, 8).toUpperCase();
 
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
+      sheet.appendRow([
+        enrollmentNo,
+        new Date(),
+        data.studentName || "",
+        data.className || "",
+        data.section || "",
+        data.rollNumber || "",
+        data.mobile || "",
+        data.email || "",
+        data.reason || "",
+        data.skills || "",
+        "Pending"
+      ]);
 
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            margin-top: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 15px;
-        }
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          success: true,
+          message: "Membership application saved successfully"
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
 
-        button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 25px;
-            background: #f5c451;
-            color: #0b1730;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+    // COMPLAINT REGISTRATION
+    let sheet = spreadsheet.getActiveSheet();
 
-        button:hover {
-            background: #e5ad27;
-        }
+    if (sheet.getName() === "Membership") {
+      sheet = spreadsheet.getSheetByName("Complaints") ||
+              spreadsheet.getSheetByName("Complaint") ||
+              spreadsheet.getSheets()[0];
+    }
 
-        .back {
-            display: block;
-            text-align: center;
-            color: #f5c451;
-            margin: 25px;
-            text-decoration: none;
-        }
-    </style>
-</head>
+    sheet.appendRow([
+      new Date(),
+      data.studentName || "",
+      data.class || "",
+      data.rollNumber || "",
+      data.section || "",
+      data.phoneNumber || "",
+      data.complaintDetails || "",
+      data.institutionType || "",
+      data.institutionName || ""
+    ]);
 
-<body>
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        success: true,
+        message: "Complaint saved successfully"
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
 
-    <header>
-        <h1>TEAM VIJRUMBHANA</h1>
-        <p>Membership Registration</p>
-        <p>Your Voice. Our Responsibility.</p>
-    </header>
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        success: false,
+        message: error.toString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
 
-    <div class="form-container">
-
-        <h2>Join Our Team</h2>
-
-        <p>Please fill in your details to apply for membership.</p>
-
-        <form id="membershipForm">
-
-            <label for="studentName">Student Name</label>
-            <input type="text" id="studentName"
-                   name="studentName" required>
-
-            <label for="className">Class</label>
-            <input type="text" id="className"
-                   name="className" required>
-
-            <label for="section">Section</label>
-            <input type="text" id="section"
-                   name="section" required>
-
-            <label for="rollNumber">Roll Number</label>
-            <input type="text" id="rollNumber"
-                   name="rollNumber" required>
-
-            <label for="mobile">Mobile Number</label>
-            <input type="tel" id="mobile"
-                   name="mobile" required>
-
-            <label for="email">Email Address</label>
-            <input type="email" id="email"
-                   name="email">
-
-            <label for="reason">Why do you want to join Team Vijrumbhana?</label>
-            <textarea id="reason" name="reason"
-                      rows="4" required></textarea>
-
-            <label for="skills">What skills can you contribute to our team?</label>
-            <textarea id="skills" name="skills"
-                      rows="3"></textarea>
-
-            <button type="submit">
-                Submit Membership Application
-            </button>
-
-        </form>
-
-    </div>
-
-    <a href="index.html" class="back">
-        ← Back to Home Page
-    </a>
-<script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxueOTcQAwyVHdjVX5LRdi1cdH4HleUTtWHDk0XuHFL_FBo1qUTmUXiKXXQV2jnn3jB/exec";
-
-    document.getElementById("membershipForm")
-    .addEventListener("submit", async function(event) {
-        event.preventDefault();
-
-        const form = event.target;
-
-        const data = {
-            studentName: form.studentName.value.trim(),
-            className: form.className.value.trim(),
-            section: form.section.value.trim(),
-            rollNumber: form.rollNumber.value.trim(),
-            mobile: form.mobile.value.trim(),
-            email: form.email.value.trim(),
-            reason: form.reason.value.trim(),
-            skills: form.skills.value.trim()
-        };
-
-        try {
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: {
-                    "Content-Type": "text/plain;charset=UTF-8"
-                },
-                body: JSON.stringify(data)
-            });
-
-            alert("Your membership application has been submitted. The team will review it.");
-
-            form.reset();
-
-        } catch (error) {
-            alert("Unable to submit your application. Please try again.");
-        }
-    });
-</script>
-    
-
-</body>
-</html>
+function doGet(e) {
+  return ContentService.createTextOutput(
+    "Team Vijrumbhana connection is working!"
+  );
+}
